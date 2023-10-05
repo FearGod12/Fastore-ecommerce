@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../../styles/styles";
-import Header from "../components/Layout/Header";
+import Header from "../../components/Layout/Header";
 import ShopInfo from "../../components/Shop/ShopInfo";
 import ShopProfileData from "../../components/Shop/ShopProfileData";
 
