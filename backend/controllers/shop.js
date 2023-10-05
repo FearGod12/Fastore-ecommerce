@@ -45,13 +45,12 @@ router.post(
         zipCode,
       };
       const newSeller = await Shop.create(seller);
-      
 
       sendShopToken(newSeller, 201, res);
 
       // const activationToken = createActivationToken(seller);
 
-      // const activationUrl = `https://eshop-tutorial-pyri.vercel.app/seller/activation/${activationToken}`;
+      // const activationUrl = `https://fastore.onrender.com/seller/activation/${activationToken}`;
 
       // try {
       //   await sendMail({
@@ -64,12 +63,12 @@ router.post(
       //     message: `please check your email:- ${seller.email} to activate your shop!`,
       //   });
       // } catch (error) {
-        // return next(new ErrorHandler(error.message, 500));
+      // return next(new ErrorHandler(error.message, 500));
       // }
       res.status(201).json({
-          success: true,
-          message: `Shop created!`,
-         });
+        success: true,
+        message: `Shop created!`,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
