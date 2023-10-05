@@ -26,31 +26,44 @@ router.post("/create-user", async (req, res, next) => {
       return next(new ErrorHandler("User already exists", 400));
     }
 
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: "avatars",
+    });
 
-    const user = {
-      name: name,
-      email: email,
-      password: password,
-      avatar: avatar
-    };
+    user = await User.create({
+      name,
+      email,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+      password,
+    });
 
-    const activationToken = createActivationToken(user);
+    sendToken(user, 201, res);
+    res.status(201).json({
+      success: true,
+      message: `User created!`,
+    });
 
-    const activationUrl = `https://fastore.onrender.com/${activationToken}`;
 
-    try {
-      await sendMail({
-        email: user.email,
-        subject: "Activate your account",
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-      });
-      res.status(201).json({
-        success: true,
-        message: `please check your email:- ${user.email} to activate your account!`,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
+    // const activationToken = createActivationToken(user);
+
+    // const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+
+    // try {
+    //   await sendMail({
+    //     email: user.email,
+    //     subject: "Activate your account",
+    //     message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+    //   });
+    //   res.status(201).json({
+    //     success: true,
+    //     message: `please check your email:- ${user.email} to activate your account!`,
+    //   });
+    // } catch (error) {
+    //   return next(new ErrorHandler(error.message, 500));
+    // }
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
@@ -59,7 +72,7 @@ router.post("/create-user", async (req, res, next) => {
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "10m",
   });
 };
 
@@ -168,6 +181,12 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.cookie("seller_token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
         sameSite: "none",
