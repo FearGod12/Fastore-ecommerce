@@ -7,7 +7,7 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: ["https://fastore.onrender.com"],
+    origin: ["https://fastore.onrender.com", "http://localhost:3000"],
     credentials: true,
   })
 );
